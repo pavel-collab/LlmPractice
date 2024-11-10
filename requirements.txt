@@ -1,0 +1,12 @@
+numpy==1.23.5
+matplotlib==3.9.2
+pandas==2.2.2
+scikit-learn==1.5.2
+torch==2.2.2
+transformers==4.40.0
+datasets==2.18.0
+accelerate==0.29.3
+evaluate==0.4.1
+bitsandbytes==0.43.1
+huggingface_hub==0.22.2
+peft==0.10.0
