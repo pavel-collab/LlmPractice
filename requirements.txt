@@ -10,3 +10,4 @@ evaluate==0.4.1
 bitsandbytes==0.43.1
 huggingface_hub==0.22.2
 peft==0.10.0
+wandb==0.18.6
