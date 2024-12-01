@@ -1,0 +1,7 @@
+defaults:
+  - model: default
+  - processing: default
+  - training: default
+  - optimizer: default
+  - artefacts: default
+  - data: default
