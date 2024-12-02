@@ -4,4 +4,4 @@ defaults:
   - training: default
   - optimizer: default
   - artefacts: default
-  - data: default
+  - dataset: default

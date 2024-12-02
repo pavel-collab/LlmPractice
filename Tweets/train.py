@@ -36,7 +36,7 @@ def main(cfg: DictConfig):
     в любой момент их можно заменить в конфиге или передать
     через comand prompt
     '''
-    df = pd.read_csv(cfg.data.path_to_train_data)
+    df = pd.read_csv(f"./{cfg.dataset.path_to_train_data}", sep='\t')
     labels = df['class'].tolist()
     texts = df['tweet'].tolist()
     dataset = TextDataset(texts, 
@@ -64,11 +64,11 @@ def main(cfg: DictConfig):
             "./.logs/my-tb-logs", 
             name=cfg.artefacts.experiment_name
         ),
-        WandbLogger(
-            project="mlops-logging-demo", 
-            name=f"{cfg.artefacts.experiment_name}-{date}",
-            log_model='all'
-        )
+        # WandbLogger(
+        #     project="mlops-logging-demo", 
+        #     name=f"{cfg.artefacts.experiment_name}-{date}",
+        #     log_model='all'
+        # )
     ]
 
     '''
@@ -108,6 +108,8 @@ def main(cfg: DictConfig):
         trainer.fit(model, data)
     except RuntimeError as ex:
         print(f"[ERROR] model training was interrupted cz of error {ex}")
+    except KeyboardInterrupt:
+        print("The training proces was interrupted by keyboard trigger")
     
 if __name__ == '__main__':
     # вызываем основной цикл обучения

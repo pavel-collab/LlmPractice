@@ -33,7 +33,7 @@ class TextDataset(Dataset):
         return {
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
-            'labels': torch.tensor(label, dtype=torch.long)
+            'label': torch.tensor(label, dtype=torch.long)
         }
     
 class TextDataModule(pl.LightningDataModule):
