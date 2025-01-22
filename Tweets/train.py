@@ -64,11 +64,11 @@ def main(cfg: DictConfig):
             "./.logs/my-tb-logs", 
             name=cfg.artefacts.experiment_name
         ),
-        # WandbLogger(
-        #     project="mlops-logging-demo", 
-        #     name=f"{cfg.artefacts.experiment_name}-{date}",
-        #     log_model='all'
-        # )
+        WandbLogger(
+            project="mlops-logging-demo", 
+            name=f"{cfg.artefacts.experiment_name}-{date}",
+            log_model='all'
+        )
     ]
 
     '''
