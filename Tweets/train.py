@@ -79,7 +79,7 @@ def main(cfg: DictConfig):
     вытащить checkpoint с наилучшей версией обученной модели.
     '''
     checkpoint_callback = ModelCheckpoint(dirpath="./checkpoints",
-                                          filename="best-checkpoint",
+                                          filename=f"{cfg.model.name}",
                                           monitor="validation_loss",
                                           mode="min")
     
