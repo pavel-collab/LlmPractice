@@ -6,10 +6,15 @@ from transformers import AutoTokenizer
 import random
 
 class TextDataset(Dataset):
-    def __init__(self, texts, labels, tokenizer_name, max_length):
+    def __init__(self, texts, labels, tokenizer_name, max_length, usolth_usage=False, tokenizer=None):
         self.texts = texts
         self.labels = labels
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        if not usolth_usage:
+            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        elif tokenizer != None:
+            self.tokenizer = tokenizer
+        else:
+            raise RuntimeError
         self.max_length = max_length
 
     def __len__(self):

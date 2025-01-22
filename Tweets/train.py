@@ -13,12 +13,18 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from omegaconf import DictConfig
 from datetime import datetime
+from unsloth import FastLanguageModel
 
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.loggers import TensorBoardLogger
 
 from data import TextDataset, TextDataModule
 from model import MyModel
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-u', '--unsolth', default=False, action='store_true') 
 
 '''
 Декоратор hydra накидывается на функцию-точку входа в программу. 
@@ -29,7 +35,7 @@ def main(cfg: DictConfig):
     Фиксируем random seed для torch, numpy и Python's random module
     '''
     pl.seed_everything(42)
-
+    args = parser.parse_args()
     '''
     инициализируем объект для работы с данными,
     передаем все параметры конструктора через hydra config,
@@ -39,10 +45,32 @@ def main(cfg: DictConfig):
     df = pd.read_csv(f"./{cfg.dataset.path_to_train_data}", sep='\t')
     labels = df['class'].tolist()
     texts = df['tweet'].tolist()
-    dataset = TextDataset(texts, 
-                          labels, 
-                          cfg.model.tokenizer, 
-                          max_length=512)
+
+    if not args.unsolth:
+        model = MyModel(model_name=cfg.model.name,
+                    lr=cfg.optimizer.learning_rate,
+                    dropout=cfg.model.dropout,
+                    weight_decay=cfg.optimizer.weight_decay)
+    else:
+        model, tokenizer = FastLanguageModel.from_pretrained(
+                    model_name = cfg.model.name, # or choose "unsloth/Llama-3.2-1B-Instruct"
+                    max_seq_length = 512,
+                    dtype = None,
+                    load_in_4bit = True                
+                    )
+
+    if not args.unsolth:
+        dataset = TextDataset(texts, 
+                            labels, 
+                            cfg.model.tokenizer, 
+                            max_length=512)
+    else:
+        dataset = TextDataset(texts, 
+                            labels, 
+                            cfg.model.tokenizer, 
+                            max_length=512,
+                            usolth_usage=True, 
+                            tokenizer=tokenizer)
 
     data = TextDataModule(dataset, 
                           cfg.processing.batch_size)
