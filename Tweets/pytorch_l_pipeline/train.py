@@ -59,6 +59,7 @@ def main(cfg: DictConfig):
                     load_in_4bit = True                
                     )
 
+    #TODO: remove this part of code (move this feature to another develop branch)
     if not args.unsolth:
         dataset = TextDataset(texts, 
                             labels, 
