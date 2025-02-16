@@ -1,10 +1,7 @@
 import pandas as pd
-import hydra
-from omegaconf import DictConfig
 import torch
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from data import TextDataset
 import numpy as np
 
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, TrainingArguments, DataCollatorWithPadding
@@ -31,17 +28,11 @@ def compute_metrics(eval_preds):
         'f1_macro': validation_f1_macro
     }
 
-def tokenize_function(examples, tokenizer):
-    return tokenizer(
-        examples['text'],
-        truncation=True,
-        max_length=128
-    )
+def main():
+    data_path = '../pytorch_l_pipeline/data/en/train.tsv'
 
-@hydra.main(config_path="./conf", config_name="config", version_base="1.2 ")
-def main(cfg: DictConfig):
     # get raw data from file
-    df = pd.read_csv(f"./{cfg.dataset.path_to_train_data}", sep='\t')
+    df = pd.read_csv(data_path, sep='\t')
     labels = df['class'].tolist()
     texts = df['tweet'].tolist()
 
@@ -53,6 +44,13 @@ def main(cfg: DictConfig):
     checkpoint = 'google/bert_uncased_L-2_H-128_A-2'
     model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+    def tokenize_function(examples):
+        return tokenizer(
+            examples['text'],
+            truncation=True,
+            max_length=128
+        )
 
     #! note that in this impemenation we pass only texts and labels.
     #! we will use tokenizer on another step
@@ -74,7 +72,7 @@ def main(cfg: DictConfig):
     # token to use
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
-    tokenized_train_dataset = train_dataset.map(tokenize_function, batched=True)
+    tokenized_train_dataset = train_dataset.map(tokenize_function, batched=False)
     tokenized_eval_dataset = eval_dataset.map(tokenize_function, batched=False)
 
     # Define training arguments
@@ -114,7 +112,10 @@ def main(cfg: DictConfig):
         args=training_args,
         train_dataset=tokenized_train_dataset,
         eval_dataset=tokenized_eval_dataset,
-        class_weights=class_weights
+        data_collator=data_collator,
+        tokenizer=tokenizer,
+        class_weights=class_weights,
+        compute_metrics=compute_metrics,
     )
 
     trainer.train()

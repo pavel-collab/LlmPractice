@@ -7,17 +7,17 @@ class CustomTrainer(Trainer):
         super().__init__(**kwargs)
         self.class_weights = class_weights
 
-    def compute_loss(self, model, inputs, return_outputs=False):
-        labels = inputs.get("labels")
-        outputs = model(**inputs)
-        logits = outputs.get("logits")
+    # def compute_loss(self, model, inputs, return_outputs=False):
+    #     labels = inputs.get("labels")
+    #     outputs = model(**inputs)
+    #     logits = outputs.get("logits")
 
-        # Calculate loss using class weights if provided
-        if self.class_weights is not None:
-            loss_fct = torch.nn.CrossEntropyLoss(weight=self.class_weights)
-        else:
-            loss_fct = torch.nn.CrossEntropyLoss()
+    #     # Calculate loss using class weights if provided
+    #     if self.class_weights is not None:
+    #         loss_fct = torch.nn.CrossEntropyLoss(weight=self.class_weights)
+    #     else:
+    #         loss_fct = torch.nn.CrossEntropyLoss()
 
-        loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+    #     loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
         
-        return (loss, outputs) if return_outputs else loss
+    #     return (loss, outputs) if return_outputs else loss
