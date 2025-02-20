@@ -1,7 +1,0 @@
-defaults:
-  - model: default
-  - processing: default
-  - training: default
-  - optimizer: default
-  - artefacts: default
-  - dataset: default
